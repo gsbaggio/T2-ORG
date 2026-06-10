@@ -1,18 +1,18 @@
 # Nome: Gabriel Souza Baggio
 
 # Obs.: Fiz algumas coisas a mais um pouco desnecessárias, como o prologo na main guardando $ra,
-#       mas queria treinar guardar o endereco de retorno e variaveis locais da função na pilha.
+#       mas queria treinar pra sempre guardar o endereco de retorno e variaveis locais da função na pilha.
 
 .data
         x: .word 0                     # int x;
-        str: .asciiz "O resultado é " 
+        str: .asciiz "O resultado e " 
         quebra_linha: .asciiz "\n"
 
 .text
 .globl main
 
         # Mapa de registradores:
-        # Utilizarei $s0 como o endereço da variável global 'x'
+        # Utilizo $s0 como o endereço da variável global 'x'
 
 main:
         # --- Prólogo ---
@@ -97,23 +97,28 @@ media3x2y:
 
 while:
         # while (a > b)
-        lw $t0, 0($sp)
-        lw $t1, 4($sp)
-        ble $t0, $t1, fim_while
+        lw $t0, 0($sp)          # Carrega o valor de a em t0
+        lw $t1, 4($sp)          # Carrega o valor de b em t1
+        ble $t0, $t1, fim_while # Se a <= b, pula para fim_while
 
         # a = a - 1
-        addi $t0, $t0, -1
-        sw $t1, 4($sp)
+        addi $t0, $t0, -1       # Decrementa a em 1
+        sw $t0, 0($sp)          # Salva a atualizado
+
+        # b = b + 1
+        addi $t1, $t1, 1        # Incrementa b em 1
+        sw $t1, 4($sp)          # Salva b atualizado
 
         j while
 
 fim_while:
         # return a
-        lw $v0, 0($sp)
+        lw $v0, 0($sp)          # Carrega o valor de a em v0
 
-        lw $ra, 8($sp)
-        addiu $sp, $sp, 12
-        jr $ra
+        # --- Epílogo ---
+        lw $ra, 8($sp)          # Restaura o endereco de retorno
+        addiu $sp, $sp, 12      # Restaura o espaco da pilha
+        jr $ra                  # Retorna ao procedimento chamador
 
 
 troca:
